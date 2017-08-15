@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <title>Assignment1</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            #map {
+                height: 100%;
+            }
+            html, body {
+                height: 100%;
+                margin: 0;
+                padding: 0;
+            }
+        </style>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script type="text/javascript" src="d3.min.js"></script>
+        
+        <script type="text/javascript">
+            
+            function initMap(){
+                var map = new google.maps.Map(d3.select("#map").node(), {
+                    zoom: 15,
+                    center: new google.maps.LatLng(40.803322, -77.862090),
+                    mapTypeId: google.maps.MapTypeId.ROADMAP});
+                
+                d3.csv("PSU_ReportedCrimes.csv", function(error, data){
+                if(error){  
+                    console.log(error);  
+                }
+                
+                for(i=0;i<data.length;i++){
+                    var lat = Number(data[i].Latitude);
+                    var lng = Number(data[i].Longitude);
+                    
+                    marker = new google.maps.Marker({
+                    position: {lat: lat, lng: lng},
+                    map: map
+                    });
+                    
+                    content = '<div id="content">' +
+                            '<b>' + 
+                            'Location: ' + data[i].Location +
+                            '</b>'+
+                            '<p>'+
+                            'Date: ' + data[i].Date +
+                            '</p>' +
+                            '<p>'+
+                            'Content: ' + data[i].Content +
+                            '</p>' +
+                            '<p>'+
+                            'Offenses: ' + data[i].Offenses +
+                            '</p>';
+                    
+                    
+                    marker.infowindow = new google.maps.InfoWindow({
+                            content: content
+                        });
+                        
+                    marker.addListener('mouseover', function() {
+                        this.infowindow.open(map, this);
+                    });
+                    marker.addListener('mouseout', function() {
+                        this.infowindow.close();
+                    });
+                }
+                
+                
+                });
+            }
+        </script>
+        <script src="https://maps.googleapis.com/maps/api/js?libraries=places&key=AIzaSyAroGP8ZUKKWekfkGm3qktsirnfEiJRoNI&callback=initMap"></script>
+        
+    </body>
+</html>
